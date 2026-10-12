@@ -3,47 +3,31 @@ name: DevOps CI Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
 
-env:
-  APP_NAME: devops-demo
-
 jobs:
-  validate:
-    name: Validate Repository
+  test:
+    name: Run Automated Tests
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Check README
-        run: test -f README.md
-
-      - name: Check workflow file exists
-        run: test -f .github/workflows/ci.yml
-
-      - name: Display project information
-        env:
-          CHECK_TYPE: basic
-        run: |
-          echo "Application: $APP_NAME"
-          echo "Check type: $CHECK_TYPE"
-          echo "Repository validation passed"
+      - name: Run repository validation
+        run: bash scripts/validate.sh
 
   report:
-    name: Report Validation Result
-    needs: validate
+    name: Report Test Result
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
-      - name: Report success
-        run: echo "All repository validation checks passed"
+      - name: Confirm tests passed
+        run: echo "All automated tests passed!"
